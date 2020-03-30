@@ -1,0 +1,8 @@
+{% extends "library_website/base.html" %}
+{% block content %}
+    <h1> Library Home!</h1>
+    {% for book in books%}
+        <h1> {{book.title}} </h1>
+        <p> By {{book.author}} on {{book.publisher}} at year {{book.year_of_publication}} </p>
+    {% endfor %}
+{% endblock content %}}
