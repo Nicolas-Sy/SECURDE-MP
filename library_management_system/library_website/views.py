@@ -6,13 +6,16 @@ books = [
         'title': 'Science Book',
         'author': 'Nicolas Sy',
         'publisher': 'Nic Inc.',
-        'year_of_publication' : '2009'
+        'year_of_publication' : '2009',
+        'content': 'book content 1'
     },
-{
+
+    {
         'title': 'Mathematics',
-        'author': 'Sean Sy',
-        'publisher': 'Sean Inc.',
-        'year_of_publication' : '2010'
+        'author': 'Henric Tay',
+        'publisher': 'Hentai Inc.',
+        'year_of_publication' : '2010',
+        'content': 'book content 2'
     },
 ]
 

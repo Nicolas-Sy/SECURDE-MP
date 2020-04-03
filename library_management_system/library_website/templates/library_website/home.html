@@ -2,7 +2,15 @@
 {% block content %}
     <h1> Library Home!</h1>
     {% for book in books%}
-        <h1> {{book.title}} </h1>
-        <p> By {{book.author}} on {{book.publisher}} at year {{book.year_of_publication}} </p>
+    	<article class="media content-section">
+		  <div class="media-body">
+		    <div class="article-metadata">
+		      <a class="mr-2" href="#">{{ book.author }}</a>
+		      <small class="text-muted">{{ book.year_of_publication }}</small>
+		    </div>
+		    <h2><a class="article-title" href="#">{{ book.title }}</a></h2>
+		    <p class="article-content">{{ book.content }}</p>
+		  </div>
+		</article>
     {% endfor %}
-{% endblock content %}}
+{% endblock content %}
