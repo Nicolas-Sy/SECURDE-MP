@@ -1,7 +1,7 @@
 {% extends "library_website/base.html" %}
 {% block content %}
     <h1> Library Home!</h1>
-    {% for book in books%}
+    {% for book in books %}
     	<article class="media content-section">
 		  <div class="media-body">
 		    <div class="article-metadata">
@@ -9,7 +9,12 @@
 		      <small class="text-muted">{{ book.year_of_publication }}</small>
 		    </div>
 		    <h2><a class="article-title" href="#">{{ book.title }}</a></h2>
-		    <p class="article-content">{{ book.content }}</p>
+		    <p class="article-content">{{ book.reviews }}</p>
+		    {% for bookinstance in bookInstances %}
+		    	<p class="article-content">{{ bookinstance.book }}</p>
+		    	<p class="article-content">{{ bookinstance.due_back }}</p>
+		    	<p class="article-content">{{ bookinstance.status }}</p>
+		    {% endfor %}
 		  </div>
 		</article>
     {% endfor %}
