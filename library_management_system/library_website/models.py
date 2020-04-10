@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from datetime import date
+from PIL import Image
 
 #Book Model
 class Book(models.Model):
@@ -11,6 +12,7 @@ class Book(models.Model):
 	year_of_publication = models.DateField(null=True, blank=True)
 	isbn = models.CharField('ISBN', max_length=13, help_text='13 Character ISBN number')
 	reviews = models.TextField(max_length = 1000, help_text='Enter your review of the book') #dapat sa user din siya???
+	image = models.ImageField(default='default.jpg', upload_to='book_pics')
 
 	def __str__(self):
 		return self.title

@@ -14,7 +14,7 @@
 
     {% for book in books %}
     	<article class="media content-section">
-    	  <img class="rounded-circle article-img" src=" {{user.profile.image.url}}"> 
+    	  <img class="article-img" src=" {{book.image.url}}"> 
 		  <div class="media-body">
 		    <div class="article-metadata">
 		      <a class="mr-2" href="#">{{ book.author }}</a>

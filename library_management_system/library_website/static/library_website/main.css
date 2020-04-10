@@ -50,8 +50,8 @@ a.article-title:hover {
 }
 
 .article-img {
-  height: 65px;
-  width: 65px;
+  height: 100px;
+  width: 68px;
   margin-right: 16px;
 }
 
@@ -81,4 +81,15 @@ a.article-title:hover {
 
 .account-heading {
   font-size: 2.5rem;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.bookdetail-img {
+  height: 300px;
+  width: 180px;
+  margin-right: 16px;
 }
