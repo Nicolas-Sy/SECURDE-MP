@@ -43,17 +43,20 @@ def profile (request):
 		u_form = UserUpdateForm(instance = request.user)
 		p_form = ProfileUpdateForm(instance = request.user.profile)
 
+	bookinstance_list = BookInstance.objects.filter(borrower=request.user).filter(status__exact='r').order_by('due_back')
+	
 	context = {
 		'u_form': u_form,
-		'p_form': p_form
+		'p_form': p_form,
+		'bookinstance_list': bookinstance_list,
 	}
 	return render(request, 'users/profile.html', context)
 
-class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
-    """Generic class-based view listing books on loan to current user."""
-    model = BookInstance
-    template_name ='users/profile.html'
-    paginate_by = 10
+# class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
+#     """Generic class-based view listing books on loan to current user."""
+#     model = BookInstance
+#     template_name ='users/profile.html'
+#     paginate_by = 10
     
-    def get_queryset(self):
-        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='r').order_by('due_back')
+#     def get_queryset(self):
+#         return 
