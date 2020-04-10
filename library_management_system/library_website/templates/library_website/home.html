@@ -1,22 +1,37 @@
 {% extends "library_website/base.html" %}
 {% block content %}
     <h1> Library Home!</h1>
+
+    <h2>Dynamic content</h2>
+	  <p>The library has the following record counts:</p>
+	  <ul>
+	    <li><strong>Books:</strong> {{ num_books }}</li>
+	    <li><strong>Copies:</strong> {{ num_instances }}</li>
+	    <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
+	    <li><strong>Authors:</strong> {{ num_authors }}</li>
+	  </ul>
+	</br> </br> 
+
     {% for book in books %}
     	<article class="media content-section">
-    	  <img class="rounded-circle article-img" src=" {{user.profile.image.url}}">
+    	  <img class="rounded-circle article-img" src=" {{user.profile.image.url}}"> 
 		  <div class="media-body">
 		    <div class="article-metadata">
 		      <a class="mr-2" href="#">{{ book.author }}</a>
 		      <small class="text-muted">{{ book.year_of_publication }}</small>
-		    </div>
-		    <h2><a class="article-title" href="#">{{ book.title }}</a></h2>
-		    <p class="article-content">{{ book.reviews }}</p>
-		    {% for bookinstance in bookInstances %}
-		    	<p class="article-content">{{ bookinstance.book }}</p>
-		    	<p class="article-content">{{ bookinstance.due_back }}</p>
-		    	<p class="article-content">{{ bookinstance.status }}</p>
-		    {% endfor %}
+		    </div> 
+		    <h2><a class="article-title" href="{{ book.get_absolute_url }}">{{ book.title }}</a></h2>
 		  </div>
 		</article>
     {% endfor %}
+
+    <p>You have visited this page {{ num_visits }}
+    	{% if num_visits == 1 %} 
+    		time
+    	{% else %} 
+    		times
+    	{% endif %}.</p>
 {% endblock content %}
+
+
+

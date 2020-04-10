@@ -1,11 +1,34 @@
 from django.contrib import admin
-from .models import Book 
-from .models import Author
-from .models import Publisher
-from .models import BookInstance
+from .models import Book, Author, Publisher, BookInstance
 
-admin.site.register(Book)
-admin.site.register(Author)
+# admin.site.register(Book)
+#admin.site.register(Author)
 admin.site.register(Publisher)
-admin.site.register(BookInstance)
+# admin.site.register(BookInstance)
 
+# Define the admin class
+class AuthorAdmin(admin.ModelAdmin):
+     list_display = ('last_name', 'first_name')
+
+# Register the admin class with the associated model
+admin.site.register(Author, AuthorAdmin)
+
+# Register the Admin classes for Book using the decorator
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+	list_display = ('title', 'author', 'publisher')
+
+# Register the Admin classes for BookInstance using the decorator
+@admin.register(BookInstance) 
+class BookInstanceAdmin(admin.ModelAdmin):
+    list_display = ('book', 'status', 'borrower', 'due_back', 'id')
+    list_filter = ('status', 'due_back')
+    
+    fieldsets = (
+        (None, {
+            'fields': ('book','imprint', 'id')
+        }),
+        ('Availability', {
+            'fields': ('status', 'due_back','borrower')
+        }),
+    )

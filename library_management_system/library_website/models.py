@@ -1,5 +1,7 @@
 from django.db import models 
 from django.contrib.auth.models import User
+from django.urls import reverse
+from datetime import date
 
 #Book Model
 class Book(models.Model):
@@ -12,6 +14,9 @@ class Book(models.Model):
 
 	def __str__(self):
 		return self.title
+
+	def get_absolute_url(self):
+		return reverse('library-book_detail', args=[str(self.id)])
 
 
 #Author Model
@@ -42,7 +47,14 @@ class BookInstance(models.Model):
 	book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True)
 	imprint = models.CharField(max_length=200)
 	due_back = models.DateField(null=True, blank=True)
+	borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
+	@property
+	def is_overdue(self):
+	    if self.due_back and date.today() > self.due_back:
+	        return True
+	    return False
+    
 	LOAN_STATUS = (
 		('a', 'Available'),
 		('r', 'Reserved'),
