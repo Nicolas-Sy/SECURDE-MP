@@ -19,6 +19,10 @@ def register (request):
 			profile.save()
 
 			username = form.cleaned_data.get('username')
+
+			group = Group.objects.get(name='Student/Teacher')
+			user.groups.add(group)
+
 			messages.success(request, f'Account created for {username}!')
 			return redirect('login')
 	else:
@@ -51,12 +55,3 @@ def profile (request):
 		'bookinstance_list': bookinstance_list,
 	}
 	return render(request, 'users/profile.html', context)
-
-# class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
-#     """Generic class-based view listing books on loan to current user."""
-#     model = BookInstance
-#     template_name ='users/profile.html'
-#     paginate_by = 10
-    
-#     def get_queryset(self):
-#         return 

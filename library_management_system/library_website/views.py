@@ -5,7 +5,11 @@ from .models import BookInstance
 from .models import Author
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-    
+from .decorators import allowed_users, bookmanager_only
+from django.contrib.auth.models import Group
+from django import template
+
+
 def home(request):
     # Generate counts of some of the main objects
     num_books = Book.objects.all().count()
@@ -32,8 +36,11 @@ def home(request):
     }
     return render(request, 'library_website/home.html', context)
 
+@allowed_users(allowed_roles=['BookManager'])
+#@bookmanager_only
 def about(request):
     return render(request, 'library_website/about.html', {'title': 'About'})
+
 
 def books(request):
     context = {
@@ -41,5 +48,14 @@ def books(request):
         'bookInstances': BookInstance.objects.all(),
     }
 
+
 class BookDetailView(generic.DetailView):
     model = Book
+
+
+register = template.Library() 
+
+@register.filter(name='has_group') 
+def has_group(user, BookManager):
+    group =  Group.objects.get(name=BookManager) 
+    return group in user.groups.all() 
