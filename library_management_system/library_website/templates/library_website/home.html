@@ -1,4 +1,5 @@
 {% extends "library_website/base.html" %}
+{% load restrict_access%}
 {% block content %}
     <h1> Library Home!</h1>
 
@@ -19,6 +20,10 @@
 		    <div class="article-metadata">
 		      <a class="mr-2" href="#">{{ book.author }}</a>
 		      <small class="text-muted">{{ book.year_of_publication }}</small>
+		      {% if user.is_authenticated and request.user|has_group:"BookManager" %}
+			      <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'library-update_book' book.id %}"> Update </a>
+				  <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'library-delete_book' book.id %}"> Delete </a>
+			  {% endif %}
 		    </div> 
 		    <h2><a class="article-title" href="{{ book.get_absolute_url }}">{{ book.title }}</a></h2>
 		  </div>

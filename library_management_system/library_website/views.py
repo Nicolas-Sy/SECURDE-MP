@@ -1,13 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Book
 from .models import BookInstance
 from .models import Author
+from .models import Publisher
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .decorators import allowed_users, bookmanager_only
 from django.contrib.auth.models import Group
 from django import template
+from .forms import CreateBook, CreateAuthor, CreatePublisher
+from django.contrib import messages
 
 
 def home(request):
@@ -59,3 +62,89 @@ register = template.Library()
 def has_group(user, BookManager):
     group =  Group.objects.get(name=BookManager) 
     return group in user.groups.all() 
+
+
+def createBook(request):
+    if request.method == 'POST':
+        book_form = CreateBook(request.POST)
+        author_form = CreateAuthor(request.POST)
+        publisher_form = CreatePublisher(request.POST)
+
+        if book_form.is_valid() and author_form.is_valid() and publisher_form.is_valid():
+            author = author_form.save()
+            publisher =  publisher_form.save()
+
+            book = book_form.save(commit=False)
+            book.author = author
+            book.publisher = publisher 
+            book.save()
+            
+            messages.success(request, f'Your book has been created!')
+            return redirect('/')
+
+    else:
+        book_form = CreateBook()
+        author_form = CreateAuthor()
+        publisher_form = CreatePublisher()
+
+    context = {
+        'book_form': book_form,
+        'author_form': author_form,
+        'publisher_form': publisher_form,
+    }
+    return render(request, 'library_website/create_book.html', context)
+
+
+def updateBook(request, pk):
+    book = Book.objects.get(id=pk)
+    author = Author.objects.get(id=pk)
+    publisher = Publisher.objects.get(id=pk)
+
+    book_form = CreateBook(instance=book)
+    author_form = CreateAuthor(instance=author)
+    publisher_form = CreatePublisher(instance=publisher)
+
+    if request.method == 'POST':
+         book_form = CreateBook(request.POST, instance=book)
+         author_form = CreateAuthor(request.POST, instance=author)
+         publisher_form = CreatePublisher(request.POST, instance=publisher)
+
+         if book_form.is_valid() and author_form.is_valid() and publisher_form.is_valid():
+            author = author_form.save()
+            publisher =  publisher_form.save()
+
+            bookEdit = book_form.save(commit=False)
+            bookEdit.author = author
+            bookEdit.publisher = publisher 
+            bookEdit.save()
+            
+            messages.success(request, f'Your book has been edited!')
+            return redirect('/')
+
+    context = {
+        'book_form': book_form,
+        'author_form': author_form,
+        'publisher_form': publisher_form,
+    }
+    return render(request, 'library_website/edit_book.html', context)
+
+
+def deleteBook(request, pk):
+    book = Book.objects.get(id=pk)
+    author = Author.objects.get(id=pk)
+    publisher = Publisher.objects.get(id=pk)
+
+    if request.method == 'POST':
+        book.delete()
+        author.delete()
+        publisher.delete()
+
+        messages.success(request, f'Your book has been deleted!')
+        return redirect('/')
+
+    context = {
+        'book': book,
+        'author': author,
+        'publisher': publisher,
+    }
+    return render(request, 'library_website/delete_book.html', context)

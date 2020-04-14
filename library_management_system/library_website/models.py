@@ -7,12 +7,12 @@ from PIL import Image
 #Book Model
 class Book(models.Model):
 	title = models.CharField(max_length = 250)
-	author = models.ForeignKey('Author', on_delete=models.CASCADE) # CASCADE means if a book is deleted, the author won't be deleted
-	publisher = models.ForeignKey('Publisher', on_delete=models.CASCADE)
-	year_of_publication = models.DateField(null=True, blank=True)
+	author = models.ForeignKey('Author', on_delete=models.CASCADE, null = True) # CASCADE means if a book is deleted, the author won't be deleted
+	publisher = models.ForeignKey('Publisher', on_delete=models.CASCADE, null = True)
+	year_of_publication = models.CharField('Year of Publication', default='', max_length=4 )
 	isbn = models.CharField('ISBN', max_length=13, help_text='13 Character ISBN number')
 	reviews = models.TextField(max_length = 1000, help_text='Enter your review of the book') #dapat sa user din siya???
-	image = models.ImageField(default='default.jpg', upload_to='book_pics')
+	image = models.ImageField(default='noImage.jpg', upload_to='book_pics', help_text='Upload cover photo of the book')
 
 	def __str__(self):
 		return self.title
@@ -23,8 +23,8 @@ class Book(models.Model):
 
 #Author Model
 class Author (models.Model):
-	first_name = models.CharField(max_length=100)
-	last_name = models.CharField(max_length=100)
+	first_name = models.CharField(max_length=100, help_text='First name of the Author')
+	last_name = models.CharField(max_length=100, help_text='Last name of the Author')
 
 	class Meta: 
 		ordering = ['first_name', 'last_name']
@@ -35,7 +35,7 @@ class Author (models.Model):
 
 #Publisher Model
 class Publisher (models.Model):
-	publisher_name = models.CharField(max_length=200)
+	publisher_name = models.CharField(max_length=200, help_text='Name of Publisher')
 
 	def __str__(self):
 		return self.publisher_name
