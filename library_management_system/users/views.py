@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from library_website.models import BookInstance, Book, Author, Publisher
+from django.contrib.auth.models import Group
 
 def register (request):
 	if request.method == 'POST':
@@ -22,6 +23,7 @@ def register (request):
 
 			group = Group.objects.get(name='Student/Teacher')
 			user.groups.add(group)
+
 
 			messages.success(request, f'Account created for {username}!')
 			return redirect('login')

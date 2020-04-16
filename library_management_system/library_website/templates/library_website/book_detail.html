@@ -33,6 +33,9 @@
 			      {% endif %}
 			      <p><strong>Imprint:</strong> {{ copy.imprint }}</p>
 			      <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
+			      {% if copy.status == 'a' and user.is_authenticated and request.user|has_group:"Student/Teacher" %}
+				      <a class="btn btn-primary btn-sm mt-1 mb-1" href=""> Borrow this book </a>
+				  {% endif %}
 			{% endfor %}
 		  </div>
 		  {% if user.is_authenticated and request.user|has_group:"BookManager" %}
