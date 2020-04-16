@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .decorators import allowed_users, bookmanager_only
 from django.contrib.auth.models import Group
 from django import template
-from .forms import CreateBook, CreateAuthor, CreatePublisher
+from .forms import CreateBook, CreateAuthor, CreatePublisher, CreateBookInstance
 from django.contrib import messages
 
 
@@ -80,7 +80,7 @@ def createBook(request):
             book.save()
             
             messages.success(request, f'Your book has been created!')
-            return redirect('/')
+            return redirect('/createBookInstance')
 
     else:
         book_form = CreateBook()
@@ -97,8 +97,8 @@ def createBook(request):
 
 def updateBook(request, pk):
     book = Book.objects.get(id=pk)
-    author = Author.objects.get(id=pk)
-    publisher = Publisher.objects.get(id=pk)
+    author = Author.objects.get(id=book.author.id)
+    publisher = Publisher.objects.get(id=book.publisher.id)
 
     book_form = CreateBook(instance=book)
     author_form = CreateAuthor(instance=author)
@@ -131,8 +131,8 @@ def updateBook(request, pk):
 
 def deleteBook(request, pk):
     book = Book.objects.get(id=pk)
-    author = Author.objects.get(id=pk)
-    publisher = Publisher.objects.get(id=pk)
+    author = Author.objects.get(id=book.author.id)
+    publisher = Publisher.objects.get(id=book.publisher.id)
 
     if request.method == 'POST':
         book.delete()
@@ -148,3 +148,60 @@ def deleteBook(request, pk):
         'publisher': publisher,
     }
     return render(request, 'library_website/delete_book.html', context)
+
+
+def createBookInstance(request):
+    if request.method == 'POST':
+        book_instance = CreateBookInstance(request.POST)
+
+        if book_instance.is_valid(): 
+            book_instance.save()
+            
+            messages.success(request, f'Your book instance has been created!')
+            return redirect('/')
+
+    else:
+        book_instance = CreateBookInstance()
+
+    context = {
+        'book_instance': book_instance,
+    }
+    return render(request, 'library_website/create_bookInstance.html', context)
+
+
+def updateBookInstance(request, pk):
+    book_instance = BookInstance.objects.get(id=pk)
+
+    book_instance_form = CreateBookInstance(instance=book_instance)
+
+    if request.method == 'POST':
+        book_instance_form = CreateBookInstance(request.POST, instance=book_instance)
+
+        if book_instance_form.is_valid(): 
+            book_instance_form.save()
+            
+            messages.success(request, f'Your book instance has been updated!')
+            return redirect('/')
+
+    context = {
+        'book_instance_form': book_instance_form
+    }
+
+    return render(request, 'library_website/edit_bookInstance.html', context)
+
+
+def deleteBookInstance(request, pk):
+    book_instance = BookInstance.objects.get(id=pk)
+    book_title = book_instance.book.title
+
+    if request.method == 'POST':
+        book_instance.delete()
+
+        messages.success(request, f'Your book instance has been deleted!')
+        return redirect('/')
+
+    context = {
+        'book_instance': book_instance,
+        'book_title' : book_title
+    }
+    return render(request, 'library_website/delete_bookInstance.html', context)

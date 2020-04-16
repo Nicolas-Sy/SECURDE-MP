@@ -46,10 +46,10 @@ import uuid  # Required for unique book instances
 
 class BookInstance(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID')
-	book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True)
-	imprint = models.CharField(max_length=200)
-	due_back = models.DateField(null=True, blank=True)
-	borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+	book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True, help_text='Choose an instance of a book')
+	imprint = models.CharField(max_length=200, help_text='Follow this template: Published by [insert author name] on [insert year of publication]')
+	due_back = models.DateField(null=True, blank=True, help_text='Follow this template: [YYYY-MM-DD] (Ex.: 2020-04-26)   NOTE: PLEASE LEAVE FIELD AS EMPTY IF THERE IS NO BORROWER')
+	borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, help_text='NOTE: PLEASE CHOOSE NULL FIELD IF THERE IS NO BORROWER')
 
 	@property
 	def is_overdue(self):
@@ -74,4 +74,7 @@ class BookInstance(models.Model):
 		ordering = ['due_back']
 
 	def __str__(self):
-		return f'{self.id} ({self.book.title})'
+		return f'{self.id}'
+
+	def get_absolute_url(self):
+		return reverse('library-update_bookInstance', args=[uuid(self.id)])
