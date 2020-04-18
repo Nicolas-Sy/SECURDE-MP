@@ -66,7 +66,7 @@ def has_group(user, BookManager):
 
 def createBook(request):
     if request.method == 'POST':
-        book_form = CreateBook(request.POST)
+        book_form = CreateBook(request.POST, request.FILES)
         author_form = CreateAuthor(request.POST)
         publisher_form = CreatePublisher(request.POST)
 
@@ -105,7 +105,7 @@ def updateBook(request, pk):
     publisher_form = CreatePublisher(instance=publisher)
 
     if request.method == 'POST':
-         book_form = CreateBook(request.POST, instance=book)
+         book_form = CreateBook(request.POST, request.FILES, instance=book)
          author_form = CreateAuthor(request.POST, instance=author)
          publisher_form = CreatePublisher(request.POST, instance=publisher)
 
@@ -205,3 +205,23 @@ def deleteBookInstance(request, pk):
         'book_title' : book_title
     }
     return render(request, 'library_website/delete_bookInstance.html', context)
+
+
+def borrowBookInstance(request, pk):
+    book_instance = BookInstance.objects.get(id=pk)
+    dueback = book_instance.due_back
+    borrower = book_instance.borrower
+    status = book_instance.status 
+
+    if request.method == 'POST':
+        dueback = '2020-04-20'
+        borrower = request.user
+        status = 'r'
+        
+        messages.success(request, f'You have successfully borrowed this book!')
+        return redirect('/')
+
+    context = {
+
+    }
+    return render(request)

@@ -1,8 +1,9 @@
 {% extends "library_website/base.html" %}
 {% load restrict_access%}
 {% block content %}
-    <h1> Library Home!</h1>
+    <h1> Books</h1>
 
+    {% if user.is_authenticated and request.user|has_group:"BookManager" %}
     <h2>Dynamic content</h2>
 	  <p>The library has the following record counts:</p>
 	  <ul>
@@ -12,7 +13,9 @@
 	    <li><strong>Authors:</strong> {{ num_authors }}</li>
 	  </ul>
 	</br> </br> 
+	{% endif %}
 
+	</br> 
     {% for book in books %}
     	<article class="media content-section">
     	  <img class="article-img" src=" {{book.image.url}}"> 

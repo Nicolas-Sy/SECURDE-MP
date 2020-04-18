@@ -11,7 +11,7 @@ class Book(models.Model):
 	publisher = models.ForeignKey('Publisher', on_delete=models.CASCADE, null = True)
 	year_of_publication = models.CharField('Year of Publication', default='', max_length=4 )
 	isbn = models.CharField('ISBN', max_length=13, help_text='13 Character ISBN number')
-	reviews = models.TextField(max_length = 1000, help_text='Enter your review of the book') #dapat sa user din siya???
+	reviews = models.TextField(default = '', max_length = 1000, help_text='Enter your review of the book') #dapat sa user din siya???
 	image = models.ImageField(default='noImage.jpg', upload_to='book_pics', help_text='Upload cover photo of the book')
 
 	def __str__(self):
