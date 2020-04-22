@@ -4,7 +4,7 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, UserProf
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
-from library_website.models import BookInstance, Book, Author, Publisher
+from library_website.models import BookInstance, Book, Author, Publisher, Comment
 from django.contrib.auth.models import Group
 
 def register (request):
@@ -50,10 +50,12 @@ def profile (request):
 		p_form = ProfileUpdateForm(instance = request.user.profile)
 
 	bookinstance_list = BookInstance.objects.filter(borrower=request.user).filter(status__exact='r').order_by('due_back')
+	comment_list = Comment.objects.filter(user=request.user)
 	
 	context = {
 		'u_form': u_form,
 		'p_form': p_form,
 		'bookinstance_list': bookinstance_list,
+		'comment_list': comment_list,
 	}
 	return render(request, 'users/profile.html', context)

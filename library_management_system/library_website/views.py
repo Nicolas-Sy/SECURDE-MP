@@ -1,18 +1,16 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from .models import Book
-from .models import BookInstance
-from .models import Author
-from .models import Publisher
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect
+from .models import Book, BookInstance, Author, Publisher, Comment
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .decorators import allowed_users, bookmanager_only
+from .decorators import allowed_users, bookmanager_only, user_is_admin
 from django.contrib.auth.models import Group
 from django import template
-from .forms import CreateBook, CreateAuthor, CreatePublisher, CreateBookInstance
+from .forms import CreateBook, CreateAuthor, CreatePublisher, CreateBookInstance, CreateComment
 from django.contrib import messages
+from datetime import datetime, timedelta
 
-
+@user_is_admin
 def home(request):
     # Generate counts of some of the main objects
     num_books = Book.objects.all().count()
@@ -39,22 +37,17 @@ def home(request):
     }
     return render(request, 'library_website/home.html', context)
 
-@allowed_users(allowed_roles=['BookManager'])
+@user_is_admin
 #@bookmanager_only
 def about(request):
     return render(request, 'library_website/about.html', {'title': 'About'})
 
-
+@user_is_admin
 def books(request):
     context = {
         'books': Book.objects.all(),
         'bookInstances': BookInstance.objects.all(),
     }
-
-
-class BookDetailView(generic.DetailView):
-    model = Book
-
 
 register = template.Library() 
 
@@ -64,6 +57,7 @@ def has_group(user, BookManager):
     return group in user.groups.all() 
 
 
+@allowed_users(allowed_roles=['BookManager'])
 def createBook(request):
     if request.method == 'POST':
         book_form = CreateBook(request.POST, request.FILES)
@@ -95,6 +89,7 @@ def createBook(request):
     return render(request, 'library_website/create_book.html', context)
 
 
+@allowed_users(allowed_roles=['BookManager'])
 def updateBook(request, pk):
     book = Book.objects.get(id=pk)
     author = Author.objects.get(id=book.author.id)
@@ -129,6 +124,7 @@ def updateBook(request, pk):
     return render(request, 'library_website/edit_book.html', context)
 
 
+@allowed_users(allowed_roles=['BookManager'])
 def deleteBook(request, pk):
     book = Book.objects.get(id=pk)
     author = Author.objects.get(id=book.author.id)
@@ -150,6 +146,7 @@ def deleteBook(request, pk):
     return render(request, 'library_website/delete_book.html', context)
 
 
+@allowed_users(allowed_roles=['BookManager'])
 def createBookInstance(request):
     if request.method == 'POST':
         book_instance = CreateBookInstance(request.POST)
@@ -169,6 +166,7 @@ def createBookInstance(request):
     return render(request, 'library_website/create_bookInstance.html', context)
 
 
+@allowed_users(allowed_roles=['BookManager'])
 def updateBookInstance(request, pk):
     book_instance = BookInstance.objects.get(id=pk)
 
@@ -190,6 +188,7 @@ def updateBookInstance(request, pk):
     return render(request, 'library_website/edit_bookInstance.html', context)
 
 
+@allowed_users(allowed_roles=['BookManager'])
 def deleteBookInstance(request, pk):
     book_instance = BookInstance.objects.get(id=pk)
     book_title = book_instance.book.title
@@ -207,21 +206,87 @@ def deleteBookInstance(request, pk):
     return render(request, 'library_website/delete_bookInstance.html', context)
 
 
+@allowed_users(allowed_roles=['BookManager'] and ['Student/Teacher'])
 def borrowBookInstance(request, pk):
     book_instance = BookInstance.objects.get(id=pk)
+    book_title = book_instance.book.title
     dueback = book_instance.due_back
     borrower = book_instance.borrower
     status = book_instance.status 
 
     if request.method == 'POST':
-        dueback = '2020-04-20'
-        borrower = request.user
-        status = 'r'
-        
-        messages.success(request, f'You have successfully borrowed this book!')
+        BookInstance.objects.filter(id=book_instance.id).update(due_back=datetime.now() + timedelta(days = 7))
+        BookInstance.objects.filter(id=book_instance.id).update(borrower=request.user)
+        BookInstance.objects.filter(id=book_instance.id).update(status='r')
+            
+        messages.success(request, f'You have 7 days from now to return this book. Thank you!')
         return redirect('/')
 
     context = {
-
+        'book_instance' : book_instance,
+        'book_title' : book_title,
     }
-    return render(request)
+    return render(request, 'library_website/borrowBook.html', context)
+
+
+@allowed_users(allowed_roles=['BookManager'] and ['Student/Teacher'])
+def returnBookInstance(request, pk):
+    book_instance = BookInstance.objects.get(id=pk)
+    book_title = book_instance.book.title
+    dueback = book_instance.due_back
+    borrower = book_instance.borrower
+    status = book_instance.status 
+    datenow = datetime.now()
+
+    if request.method == 'POST':
+        BookInstance.objects.filter(id=book_instance.id).update(due_back=None)
+        BookInstance.objects.filter(id=book_instance.id).update(borrower=None)
+        BookInstance.objects.filter(id=book_instance.id).update(status='a')
+            
+        messages.success(request, f'You have successfully returned this book. Thank you!')
+        return redirect('/')
+
+    context = {
+        'book_instance' : book_instance,
+        'book_title' : book_title,
+        'dueback' : dueback,
+        'datenow' : datenow
+    }
+    return render(request, 'library_website/returnBook.html', context)
+
+
+@user_is_admin
+def bookDetail(request, pk):
+    book = Book.objects.get(id=pk)
+    comments = Comment.objects.filter(book=book)
+
+    if request.method == "POST":
+        comment_user = request.user 
+        comment_book = book
+        comment_form = CreateComment(data=request.POST)
+        comment_edit = CreateComment(instance = comments)
+
+        if comment_form.is_valid():
+            finalcomment = comment_form.save(commit=False)
+            finalcomment.user = comment_user
+            finalcomment.book = comment_book
+            finalcomment.save()
+
+            messages.success(request, f'Your review has been posted!')
+
+        if comment_edit.is_valid():
+            editedcomment = comment_edit.save(commit=False)
+            editedcomment.user = comment_user
+            editedcomment.book = comment_book
+            editedcomment.save()
+
+    else:
+        comment_form = CreateComment()
+
+    context = {
+        "book": book,
+        "comments" : comments,
+        "comment_form": comment_form,
+    }
+
+    return render(request, "library_website/book_detail.html", context)

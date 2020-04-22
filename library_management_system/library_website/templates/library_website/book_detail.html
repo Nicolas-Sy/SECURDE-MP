@@ -1,5 +1,6 @@
 {% extends "library_website/base.html" %}
 {% load restrict_access%}
+{% load crispy_forms_tags %}
 {% block content %}
     
     	<article class="media content-section">
@@ -14,12 +15,44 @@
 			    <p><strong>Publisher:</strong> {{ book.publisher }}</p>
 			    <p><strong>Year of Publication:</strong> {{ book.year_of_publication }}</p>
 			    <p><strong>ISBN:</strong> {{ book.isbn }}</p> 
-			    {% if book.reviews == '' %}
-			    <p class="article-content"><strong> Reviews: </strong> There are no reviews for this book yet. </p>
-			    {% elif book.reviews != ''%}
-		        <p class="article-content"><strong> Reviews: </strong> {{ book.reviews }}</p>
-		        {% endif %}
-		        <br/>	
+			    {% if comments.count == 0 %}
+			    	<p><strong> Reviews: </strong> No reviews yet.</p>
+			    {% else %}
+			    	<p><strong>{{comments.count}} Reviews: </strong></p>
+			    	{% for comment in comments %} 
+				        <div class="comments" style="padding: 10px;">
+				          <p class="font-weight-bold">
+				          	 <img class="comments-img" src=" {{comment.user.profile.image.url}}"> 
+				            {{ comment.user }}
+				            <span class=" text-muted font-weight-normal">
+				              {{ comment.created_on }}
+				              {% if comment.user == request.user %}
+				               <form action="" method="POST">
+				              	 <a class="btn btn-secondary btn-sm mt-1 mb-1" href=""> Edit </a>
+					  			 <a class="btn btn-danger btn-sm mt-1 mb-1" href=""> Delete </a>
+					  			</form>
+				              {% endif%}
+				            </span>
+				          </p>
+				          {{ comment.comment | linebreaks }}
+				        </div>
+			        {% endfor %}
+			    {% endif %}
+			    
+
+			    {% if user.is_authenticated and request.user|has_group:"Student/Teacher" %}
+			        <div class="col-md-8 card mb-4  mt-3 ">
+				        <h3>Leave a comment</h3>
+				        <form method="POST" style="margin-top: 1.4em;">
+				          {% csrf_token %}
+				          {{ comment_form|crispy }}
+				          <div class="text-right">
+				          	 <button type="submit" class="btn btn-primary">Submit</button>
+				          </div>
+				        </form>
+				    </div>
+		        <br/>
+		        {% endif%}	
 		 
 		     <h4>Copies</h4>
 		    {% for copy in book.bookinstance_set.all %}
@@ -36,16 +69,20 @@
 			      	<p><strong>Borrower:</strong> {{copy.borrower}}
 			      {% endif %}
 			      <p><strong>Imprint:</strong> {{ copy.imprint }}</p>
-			      <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
+			      {% if user.is_authenticated and request.user|has_group:"BookManager" %}
+			      	<p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>
+			      {% endif %}
 			      {% if copy.status == 'a' and user.is_authenticated and request.user|has_group:"Student/Teacher" %}
-			      <form action ="" method ="POST">
-				      <a class="btn btn-primary btn-sm mt-1 mb-1" href=""> Borrow this book </a>
-				  </form>
+					      <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'library-borrow_book' copy.id %}"> Borrow this book </a>
+				  {% elif copy.status == 'r' and user.is_authenticated and request.user|has_group:"Student/Teacher" and copy.borrower == request.user%}
+				  		  <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'library-return_book' copy.id %}"> Return this book </a>
 				  {% endif %}
 			{% endfor %}
 		  </div>
 		  {% if user.is_authenticated and request.user|has_group:"BookManager" %}
-		      <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'library-create_bookInstance' %}"> Add a Copy </a>
+		  	 <div class="text-right">
+		        <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'library-create_bookInstance' %}"> Add a Copy </a>
+		     </div>
 		  {% endif %}
 		</article>
 {% endblock content %}

@@ -33,3 +33,18 @@ def bookmanager_only(view_func):
 
 
 	return wrapper_function
+
+
+def user_is_admin(view_func):
+	def wrapper_function(request, *args, **kwargs):
+
+		if request.user.is_authenticated and request.user.is_staff:
+			return HttpResponse('You are not allowed to view this page.')
+
+		elif request.user.is_authenticated:
+			return view_func(request, *args, **kwargs)
+
+		else:
+			return view_func(request, *args, **kwargs)
+
+	return wrapper_function

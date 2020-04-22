@@ -1,10 +1,10 @@
 from django import forms
-from .models import Book, BookInstance, Author, Publisher, BookInstance
+from .models import Book, BookInstance, Author, Publisher, BookInstance, Comment
 
 class CreateBook(forms.ModelForm):
 	class Meta:
 		model = Book 
-		fields = ['title', 'year_of_publication', 'isbn', 'image']
+		fields = ['title', 'year_of_publication', 'isbn', 'dewey', 'image']
 
 class CreateAuthor(forms.ModelForm):
 	class Meta:
@@ -20,3 +20,8 @@ class CreateBookInstance(forms.ModelForm):
 	class Meta: 
 		model = BookInstance
 		fields = ['book', 'imprint', 'status', 'due_back', 'borrower']
+
+class CreateComment(forms.ModelForm):
+	class Meta: 
+		model = Comment
+		fields =['comment']

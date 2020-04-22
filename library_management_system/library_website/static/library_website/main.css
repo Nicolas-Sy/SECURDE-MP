@@ -10,7 +10,7 @@ h1, h2, h3, h4, h5, h6 {
 
 ul {
   margin: 0;
-}
+} 
 
 .bg-steel {
   background-color: #5f788a;
@@ -92,4 +92,10 @@ a.article-title:hover {
   height: 300px;
   width: 180px;
   margin-right: 16px;
+}
+
+.comments-img{
+  height: 50px;
+  width: 50px;
+  border-radius: 25px;
 }

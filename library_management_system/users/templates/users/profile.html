@@ -10,7 +10,7 @@
     		</div>	
     	</div>
 
-        <h1>Borrowed books</h1>
+        <h2>Borrowed Books</h2>
 
         {% if bookinstance_list %}
             <ul>
@@ -24,7 +24,25 @@
 
         {% else %}
           <p>There are no books borrowed.</p>
-        {% endif %}       
+        {% endif %}
+        <br/> 
+
+        <h2> Reviews Written</h2>
+        {% if comment_list %}
+            <ul>
+              {% for commentinst in comment_list %} 
+              <li>
+                <a href="{% url 'library-book_detail' commentinst.book.pk %}">{{commentinst.book.title}}</a> 
+                <p> <strong>Review:</strong> {{commentinst.comment}} </p>
+                <p> <strong>Written on:</strong> {{commentinst.created_on}}</p>       
+              </li>
+              {% endfor %}
+              <br/>
+            </ul>
+
+        {% else %}
+          <p>You have not yet written any reviews on a book.</p>
+        {% endif %}
 
     	<form method="POST" enctype="multipart/form-data">
     		{% csrf_token %}
@@ -33,7 +51,7 @@
     			{{ u_form|crispy }}
     			{{ p_form|crispy }}
     		</fieldset>
-    		<div class="form-group">
+    		<div class="text-right">
     			<button class="btn btn-outline-info" type="submit"> Update </button>
     		</div>
     	</form>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Author, Publisher, BookInstance
+from .models import Book, Author, Publisher, BookInstance, Comment
 
 # admin.site.register(Book)
 #admin.site.register(Author)
@@ -32,3 +32,9 @@ class BookInstanceAdmin(admin.ModelAdmin):
             'fields': ('status', 'due_back','borrower')
         }),
     )
+
+@admin.register(Comment) 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'comment', 'book', 'created_on')
+    list_filter = ['created_on']
+    search_fields = ['comment']
