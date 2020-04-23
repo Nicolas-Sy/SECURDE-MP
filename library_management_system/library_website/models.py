@@ -81,7 +81,9 @@ class BookInstance(models.Model):
 		return reverse('library-update_bookInstance', args=[uuid(self.id)])
 
 
+import uuid  # Required for unique book instances 
 class Comment(models.Model):
+	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID')
 	book = models.ForeignKey('Book', on_delete=models.CASCADE, related_name='reviews')
 	user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 	comment = models.TextField(default = '', max_length = 3000, help_text='Enter your review of the book')
@@ -91,4 +93,5 @@ class Comment(models.Model):
 		ordering = ['created_on']
 
 	def __str__(self):
-		return 'Comment {} by {}'.format(self.comment, self.user)
+		return f'{self.id}'
+		# return 'Comment {} by {}'.format(self.comment, self.user)

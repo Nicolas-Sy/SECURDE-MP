@@ -17,4 +17,6 @@ urlpatterns = [
     path('book/<int:pk>', views.bookDetail, name='library-book_detail'),
     path('borrowBook/<uuid:pk>', views.borrowBookInstance, name ='library-borrow_book'),
     path('returnBook/<uuid:pk>', views.returnBookInstance, name ='library-return_book'),
+    path('editComment/<uuid:pk>', views.editComment, name ='library-edit_comment'),
+    path('deleteComment/<uuid:pk>', views.deleteComment, name ='library-delete_comment'),
 ]

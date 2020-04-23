@@ -27,10 +27,8 @@
 				            <span class=" text-muted font-weight-normal">
 				              {{ comment.created_on }}
 				              {% if comment.user == request.user %}
-				               <form action="" method="POST">
-				              	 <a class="btn btn-secondary btn-sm mt-1 mb-1" href=""> Edit </a>
-					  			 <a class="btn btn-danger btn-sm mt-1 mb-1" href=""> Delete </a>
-					  			</form>
+				              	 <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'library-edit_comment' comment.id %}"> Edit </a>
+					  			 <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'library-delete_comment' comment.id %}"> Delete </a>
 				              {% endif%}
 				            </span>
 				          </p>

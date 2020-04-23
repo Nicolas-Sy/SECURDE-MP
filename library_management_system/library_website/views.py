@@ -114,7 +114,7 @@ def updateBook(request, pk):
             bookEdit.save()
             
             messages.success(request, f'Your book has been edited!')
-            return redirect('/')
+            return redirect('/book/' + str(book.id))
 
     context = {
         'book_form': book_form,
@@ -150,12 +150,13 @@ def deleteBook(request, pk):
 def createBookInstance(request):
     if request.method == 'POST':
         book_instance = CreateBookInstance(request.POST)
+        bookID = book_instance.book.id
 
         if book_instance.is_valid(): 
             book_instance.save()
             
             messages.success(request, f'Your book instance has been created!')
-            return redirect('/')
+            return redirect('/book/' + str(bookID))
 
     else:
         book_instance = CreateBookInstance()
@@ -169,6 +170,7 @@ def createBookInstance(request):
 @allowed_users(allowed_roles=['BookManager'])
 def updateBookInstance(request, pk):
     book_instance = BookInstance.objects.get(id=pk)
+    bookID = book_instance.book.id
 
     book_instance_form = CreateBookInstance(instance=book_instance)
 
@@ -179,7 +181,7 @@ def updateBookInstance(request, pk):
             book_instance_form.save()
             
             messages.success(request, f'Your book instance has been updated!')
-            return redirect('/')
+            return redirect('/book/' + str(bookID))
 
     context = {
         'book_instance_form': book_instance_form
@@ -192,12 +194,13 @@ def updateBookInstance(request, pk):
 def deleteBookInstance(request, pk):
     book_instance = BookInstance.objects.get(id=pk)
     book_title = book_instance.book.title
+    bookID = book_instance.book.id
 
     if request.method == 'POST':
         book_instance.delete()
 
         messages.success(request, f'Your book instance has been deleted!')
-        return redirect('/')
+        return redirect('/book/' + str(bookID))
 
     context = {
         'book_instance': book_instance,
@@ -258,13 +261,12 @@ def returnBookInstance(request, pk):
 @user_is_admin
 def bookDetail(request, pk):
     book = Book.objects.get(id=pk)
-    comments = Comment.objects.filter(book=book)
+    comments = Comment.objects.filter(book = book)
 
     if request.method == "POST":
         comment_user = request.user 
         comment_book = book
         comment_form = CreateComment(data=request.POST)
-        comment_edit = CreateComment(instance = comments)
 
         if comment_form.is_valid():
             finalcomment = comment_form.save(commit=False)
@@ -273,12 +275,6 @@ def bookDetail(request, pk):
             finalcomment.save()
 
             messages.success(request, f'Your review has been posted!')
-
-        if comment_edit.is_valid():
-            editedcomment = comment_edit.save(commit=False)
-            editedcomment.user = comment_user
-            editedcomment.book = comment_book
-            editedcomment.save()
 
     else:
         comment_form = CreateComment()
@@ -290,3 +286,50 @@ def bookDetail(request, pk):
     }
 
     return render(request, "library_website/book_detail.html", context)
+
+@allowed_users(allowed_roles=['Student/Teacher'])
+def editComment(request, pk):
+    comments = Comment.objects.get(id=pk)
+    bookID = comments.book.id
+
+    editCommentForm = CreateComment(instance=comments)
+
+    if request.method == "POST":
+        editCommentForm = CreateComment(request.POST, instance=comments)
+
+        if editCommentForm.is_valid(): 
+            editCommentForm.save()
+            
+            messages.success(request, f'Your comment has been updated!')
+            return redirect('/book/' + str(bookID))
+
+
+    context = {
+        "comments" : comments,
+        "editCommentForm" : editCommentForm,
+    }
+    return render(request, "library_website/edit_Comment.html", context)
+
+
+@allowed_users(allowed_roles=['Student/Teacher'])
+def deleteComment(request, pk):
+    comments = Comment.objects.get(id=pk)
+    commentContent = comments.comment
+    commentBook = comments.book
+    commentCreatedOn = comments.created_on
+    bookID = comments.book.id
+
+    if request.method == "POST":
+        comments.delete()
+            
+        messages.success(request, f'Your comment has been deleted!')
+        return redirect('/book/' + str(bookID))
+
+
+    context = {
+        "comments" : comments,
+        "commentContent" : commentContent,
+        "commentBook" : commentBook,
+        "commentCreatedOn" : commentCreatedOn,
+    }
+    return render(request, "library_website/delete_Comment.html", context)
