@@ -15,6 +15,7 @@
 			    <p><strong>Publisher:</strong> {{ book.publisher }}</p>
 			    <p><strong>Year of Publication:</strong> {{ book.year_of_publication }}</p>
 			    <p><strong>ISBN:</strong> {{ book.isbn }}</p> 
+			    <p><strong>Dewey Decimal Number: </strong> {{book.dewey}} </p>
 			    {% if comments.count == 0 %}
 			    	<p><strong> Reviews: </strong> No reviews yet.</p>
 			    {% else %}
