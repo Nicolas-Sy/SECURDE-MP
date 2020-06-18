@@ -73,7 +73,7 @@
 			      {% if copy.status == 'a' and user.is_authenticated and request.user|has_group:"Student/Teacher" %}
 					      <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'library-borrow_book' copy.id %}"> Borrow this book </a>
 				  {% elif copy.status == 'r' and user.is_authenticated and request.user|has_group:"Student/Teacher" and copy.borrower == request.user%}
-				  		  <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'library-return_book' copy.id %}"> Return this book </a>
+				  		  <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'library-return_book' copy.id %}"> Return this book </a>
 				  {% endif %}
 			{% endfor %}
 		  </div>

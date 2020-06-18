@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Book, BookInstance, Author, Publisher, Comment
+from .models import Book, BookInstance, Author, Publisher, Comment, HistoryOfBorrowers
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .decorators import allowed_users, bookmanager_only, user_is_admin
@@ -9,6 +9,7 @@ from django import template
 from .forms import CreateBook, CreateAuthor, CreatePublisher, CreateBookInstance, CreateComment
 from django.contrib import messages
 from datetime import datetime, timedelta
+from django.db.models import F
 
 @user_is_admin
 def home(request):
@@ -209,7 +210,7 @@ def deleteBookInstance(request, pk):
     return render(request, 'library_website/delete_bookInstance.html', context)
 
 
-@allowed_users(allowed_roles=['BookManager'] and ['Student/Teacher'])
+@allowed_users(allowed_roles=['Student/Teacher'])
 def borrowBookInstance(request, pk):
     book_instance = BookInstance.objects.get(id=pk)
     book_title = book_instance.book.title
@@ -221,9 +222,15 @@ def borrowBookInstance(request, pk):
         BookInstance.objects.filter(id=book_instance.id).update(due_back=datetime.now() + timedelta(days = 7))
         BookInstance.objects.filter(id=book_instance.id).update(borrower=request.user)
         BookInstance.objects.filter(id=book_instance.id).update(status='r')
-            
+
+        history = HistoryOfBorrowers.objects.create()
+        history.book = book_instance.book
+        history.borrower = request.user
+        history.save()
+
         messages.success(request, f'You have 7 days from now to return this book. Thank you!')
         return redirect('/')
+
 
     context = {
         'book_instance' : book_instance,
@@ -232,7 +239,7 @@ def borrowBookInstance(request, pk):
     return render(request, 'library_website/borrowBook.html', context)
 
 
-@allowed_users(allowed_roles=['BookManager'] and ['Student/Teacher'])
+@allowed_users(allowed_roles=['Student/Teacher'])
 def returnBookInstance(request, pk):
     book_instance = BookInstance.objects.get(id=pk)
     book_title = book_instance.book.title
@@ -275,6 +282,7 @@ def bookDetail(request, pk):
             finalcomment.save()
 
             messages.success(request, f'Your review has been posted!')
+            comment_form = CreateComment()
 
     else:
         comment_form = CreateComment()

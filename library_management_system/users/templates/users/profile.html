@@ -11,21 +11,20 @@
     	</div>
 
         <h2>Borrowed Books</h2>
-
         {% if bookinstance_list %}
             <ul>
               {% for bookinst in bookinstance_list %} 
               <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
-                <a href="{% url 'library-book_detail' bookinst.book.pk %}">{{bookinst.book.title}}</a> ({{ bookinst.due_back }})        
+                <a href="{% url 'library-book_detail' bookinst.book.pk %}">{{bookinst.book.title}}</a> (<strong>Due Date: </strong> {{ bookinst.due_back }})        
               </li>
               {% endfor %}
               <br/>
             </ul>
-
         {% else %}
           <p>There are no books borrowed.</p>
         {% endif %}
         <br/> 
+
 
         <h2> Reviews Written</h2>
         {% if comment_list %}
@@ -39,10 +38,25 @@
               {% endfor %}
               <br/>
             </ul>
-
         {% else %}
           <p>You have not yet written any reviews on a book.</p>
         {% endif %}
+
+
+        <h2> History of All Borrowed Books </h2>
+        {% if history_list %}
+            <ul>
+              {% for historyiterator in history_list %}  
+                  <li>
+                    <a href="{% url 'library-book_detail' historyiterator.book.pk %}">{{historyiterator.book.title}}</a>
+                  </li>
+              {% endfor %}
+              <br/>
+            </ul>
+        {% else %}
+          <p>There are no books borrowed yet.</p>
+        {% endif %}
+        <br/> 
 
     	<form method="POST" enctype="multipart/form-data">
     		{% csrf_token %}

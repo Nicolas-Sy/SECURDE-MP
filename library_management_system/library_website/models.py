@@ -95,3 +95,13 @@ class Comment(models.Model):
 	def __str__(self):
 		return f'{self.id}'
 		# return 'Comment {} by {}'.format(self.comment, self.user)
+
+
+import uuid 
+class HistoryOfBorrowers(models.Model):
+	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID')
+	book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True)
+	borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+	def __str__(self):
+		return f'{self.book} borrowed by {self.borrower}'
