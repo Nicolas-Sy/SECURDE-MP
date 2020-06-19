@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-
+from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,16 +31,24 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'axes',
     'users.apps.UsersConfig',
     'library_website.apps.LibraryWebsiteConfig',
     'crispy_forms',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+AUTHENTICATION_BACKENDS = [
+    # AxesBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
+    'axes.backends.AxesBackend',
+
+    # Django ModelBackend is the default authentication backend.
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +60,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
+
+     # AxesMiddleware should be the last middleware in the MIDDLEWARE list.
+    'axes.middleware.AxesMiddleware'
 ]
 
 ROOT_URLCONF = 'library_management_system.urls'
@@ -139,16 +150,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+EMAIL_HOST_USER = os.environ.get('SECURDE_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('SECURDE_PASS')
 
 USE_TZ = True
 
 TIME_ZONE = 'Asia/Hong_Kong'
 
 
-# TIME= 240*60  # 4 hours  or your time
-# SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
-# SESSION_EXPIRE_AT_BROWSER_CLOSE= True
-# SESSION_COOKIE_AGE = TIME    #change expired session
-# SESSION_IDLE_TIMEOUT = TIME  #logout
+AXES_ENABLED = True 
+AXES_FAILURE_LIMIT = 3
+AXES_COOLOFF_TIME = timedelta(seconds = 60)
+AXES_ONLY_USER_FAILURES = True
