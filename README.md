@@ -9,7 +9,7 @@ Languages used:
 
 # To install and run the website locally
 - pip install Django (if Django is not yet installed on the machine)
-- python manage.py runserver
 - pip install django-crispy-forms (Django Forms used in Login Forms)
 - pip install Pillow (Python Image Library used for ImageFields)
 - pip install django-session-timeout (Session Timeout used for user inactivity feature)
+- python manage.py runserver
