@@ -146,8 +146,6 @@ USE_TZ = True
 
 TIME_ZONE = 'Asia/Hong_Kong'
 
-
-
 # TIME= 240*60  # 4 hours  or your time
 # SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 # SESSION_EXPIRE_AT_BROWSER_CLOSE= True
