@@ -15,7 +15,7 @@
             <ul>
               {% for bookinst in bookinstance_list %} 
               <li class="{% if bookinst.is_overdue %}text-danger{% endif %}">
-                <a href="{% url 'library-book_detail' bookinst.book.pk %}">{{bookinst.book.title}}</a> (<strong>Due Date: </strong> {{ bookinst.due_back }})        
+                <p><strong> {{bookinst.book.title}} </strong>(<strong>Due Date: </strong> {{ bookinst.due_back }}) </p>        
               </li>
               {% endfor %}
               <br/>
@@ -23,7 +23,6 @@
         {% else %}
           <p>There are no books borrowed.</p>
         {% endif %}
-        <br/> 
 
 
         <h2> Reviews Written</h2>
@@ -31,9 +30,9 @@
             <ul>
               {% for commentinst in comment_list %} 
               <li>
-                <a href="{% url 'library-book_detail' commentinst.book.pk %}">{{commentinst.book.title}}</a> 
-                <p> <strong>Review:</strong> {{commentinst.comment}} </p>
-                <p> <strong>Written on:</strong> {{commentinst.created_on}}</p>       
+                <p><strong> {{commentinst.book.title}} </strong></p> 
+                <p> Review: {{commentinst.comment}} </p>
+                <p> Written on: {{commentinst.created_on}}</p>       
               </li>
               {% endfor %}
               <br/>
@@ -48,7 +47,7 @@
             <ul>
               {% for historyiterator in history_list %}  
                   <li>
-                    <a href="{% url 'library-book_detail' historyiterator.book.pk %}">{{historyiterator.book.title}}</a>
+                    <p><strong> {{historyiterator.book.title}} </strong></p>
                   </li>
               {% endfor %}
               <br/>

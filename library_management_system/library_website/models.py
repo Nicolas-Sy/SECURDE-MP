@@ -47,10 +47,10 @@ import uuid  # Required for unique book instances
 
 class BookInstance(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID')
-	book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True, help_text='Choose an instance of a book')
+	book = models.ForeignKey('Book', on_delete=models.CASCADE, null=True, help_text='Choose an instance of a book')
 	imprint = models.CharField(max_length=200, help_text='Follow this template: Published by [insert author name] on [insert year of publication]')
 	due_back = models.DateField(null=True, blank=True, help_text='Follow this template: [YYYY-MM-DD] (Ex.: 2020-04-26) [NOTE: PLEASE LEAVE FIELD AS EMPTY IF THERE IS NO BORROWER]')
-	borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, help_text='[NOTE: PLEASE CHOOSE NULL FIELD IF THERE IS NO BORROWER]')
+	borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, help_text='[NOTE: PLEASE CHOOSE NULL FIELD IF THERE IS NO BORROWER]')
 	
 	@property
 	def is_overdue(self):
@@ -85,7 +85,7 @@ import uuid  # Required for unique book instances
 class Comment(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID')
 	book = models.ForeignKey('Book', on_delete=models.CASCADE, related_name='reviews')
-	user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	comment = models.TextField(default = '', max_length = 3000, help_text='Enter your review of the book')
 	created_on = models.DateTimeField(auto_now_add=True)
 
@@ -100,7 +100,7 @@ class Comment(models.Model):
 import uuid 
 class HistoryOfBorrowers(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID')
-	book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True)
+	book = models.ForeignKey('Book', on_delete=models.CASCADE, null=True)
 	borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
 	def __str__(self):
