@@ -21,7 +21,7 @@
     	  <img class="article-img" src=" {{book.image.url}}"> 
 		  <div class="media-body">
 		    <div class="article-metadata">
-		      <a class="mr-2" href="#">{{ book.author }}</a>
+		      <div class="mr-2" href="#">{{ book.author }}</div>
 		      <small class="text-muted">{{ book.year_of_publication }}</small>
 		      {% if user.is_authenticated and request.user|has_group:"BookManager" %}
 			      <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'library-update_book' book.id %}"> Update </a>
@@ -33,12 +33,6 @@
 		</article>
     {% endfor %}
 
-    <p>You have visited this page {{ num_visits }}
-    	{% if num_visits == 1 %} 
-    		time
-    	{% else %} 
-    		times
-    	{% endif %}.</p>
 {% endblock content %}
 
 

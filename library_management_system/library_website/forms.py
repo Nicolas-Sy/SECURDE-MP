@@ -19,7 +19,7 @@ class CreatePublisher(forms.ModelForm):
 class CreateBookInstance(forms.ModelForm):
 	class Meta: 
 		model = BookInstance
-		fields = ['book', 'imprint', 'status', 'due_back', 'borrower']
+		fields = ['book', 'imprint', 'status']
 
 class CreateComment(forms.ModelForm):
 	class Meta: 

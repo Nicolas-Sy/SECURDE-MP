@@ -151,14 +151,12 @@ def deleteBook(request, pk):
 def createBookInstance(request):
     if request.method == 'POST':
         book_instance = CreateBookInstance(request.POST)
-        bookID = book_instance.book.id
 
         if book_instance.is_valid(): 
             book_instance.save()
             
             messages.success(request, f'Your book instance has been created!')
-            return redirect('/book/' + str(bookID))
-
+            return redirect('/')
     else:
         book_instance = CreateBookInstance()
 
